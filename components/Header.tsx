@@ -96,7 +96,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-md shadow-sm">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-5 py-4 md:gap-4">
         {/* Logo */}
         <Link href="/" className="shrink-0 text-2xl font-black tracking-tight text-ink">
           Names<span className="text-sage">Hub</span>
@@ -120,10 +120,10 @@ export default function Header() {
         </nav>
 
         {/* Search + Mobile menu */}
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-3 md:flex-none">
           {/* Global Dynamic Search */}
-          <div ref={searchRef} className="relative">
-            <div className="flex items-center gap-2 rounded-xl bg-ink px-3 py-2.5 text-white transition focus-within:bg-sage">
+          <div ref={searchRef} className="relative min-w-0 flex-1 md:flex-none">
+            <div className="flex min-w-0 items-center gap-2 rounded-xl bg-ink px-3 py-2.5 text-white transition focus-within:bg-sage md:w-auto">
               {loading ? (
                 <Loader2 size={17} className="animate-spin" />
               ) : (
@@ -138,7 +138,7 @@ export default function Header() {
                 }}
                 onFocus={() => setIsOpen(true)}
                 placeholder="Search anything..."
-                className="w-28 bg-transparent text-sm font-semibold placeholder:text-white/70 outline-none sm:w-52"
+                className="min-w-0 flex-1 bg-transparent text-sm font-semibold placeholder:text-white/70 outline-none md:w-28 md:flex-none sm:w-52"
               />
               {query && (
                 <button
