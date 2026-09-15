@@ -35,7 +35,7 @@ export default function AnimatedFeaturedNames() {
 
   return (
     <div
-      className="relative ml-auto w-full max-w-sm overflow-hidden rounded-sm border bg-white p-8 shadow-[0_1px_0_rgba(0,0,0,0.03)]"
+      className="relative ml-auto min-w-0 w-full max-w-sm overflow-hidden rounded-sm border bg-white p-8 shadow-[0_1px_0_rgba(0,0,0,0.03)]"
       style={{ borderColor: "var(--sage-line)" }}
       onKeyDown={(event) => {
         if (event.key === "ArrowLeft") moveSlide(-1);
@@ -68,7 +68,7 @@ export default function AnimatedFeaturedNames() {
           </p>
         </div>
 
-        <div className="mt-8 flex items-center justify-between gap-4">
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 md:flex-nowrap">
           <div className="flex items-center gap-3">
             <button
               type="button"

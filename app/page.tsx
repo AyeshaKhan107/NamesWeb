@@ -431,7 +431,7 @@ export default function Home() {
           </span>
 
           <div className="relative mx-auto grid max-w-6xl gap-14 px-5 pb-16 pt-16 md:grid-cols-[1.15fr_0.85fr] md:items-center md:pb-24 md:pt-24">
-            <div>
+            <div className="min-w-0">
               <h1 className="font-display max-w-xl text-[2.75rem] font-medium leading-[1.08] tracking-tight md:text-[3.6rem]">
                 Every name carries a story.
               </h1>

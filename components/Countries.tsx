@@ -46,12 +46,12 @@ export default function Countries() {
             <Link
               key={region.slug}
               href={`/countries/${region.slug}`}
-              className="group"
+              className="group min-w-0"
             >
-              <article className="h-full bg-white border border-[#E3E9E4] rounded-3xl p-7 md:p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              <article className="h-full min-w-0 bg-white border border-[#E3E9E4] rounded-3xl p-7 md:p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 {/* Card Header */}
                 <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-center gap-4">
+                  <div className="flex min-w-0 items-center gap-4">
                     <div className="w-14 h-14 rounded-2xl bg-[#E7F0E9] flex items-center justify-center">
                       <Globe2
                         size={27}
@@ -59,7 +59,7 @@ export default function Countries() {
                       />
                     </div>
 
-                    <div>
+                    <div className="min-w-0">
                       <h3 className="text-2xl font-black text-[#172019]">
                         {region.name}
                       </h3>
