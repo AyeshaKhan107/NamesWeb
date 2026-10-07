@@ -98,9 +98,9 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-md shadow-sm">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-5 py-4 md:gap-4">
         {/* Logo */}
-        <Link href="/" className="shrink-0 text-2xl font-black tracking-tight text-ink">
-          Names<span className="text-sage">Hub</span>
-          <span className="text-sage">.</span>
+        <Link href="/" className="group shrink-0 text-2xl font-black tracking-tight text-ink" aria-label="NameWorlds home">
+          <span className="inline-block transition-transform duration-500 group-hover:translate-y-[-1px]">Name</span><span className="inline-block text-sage transition-colors duration-500 group-hover:text-ink">Worlds</span>
+          <span className="inline-block text-sage transition-transform duration-500 group-hover:rotate-90">.</span>
         </Link>
 
         {/* Desktop Nav */}

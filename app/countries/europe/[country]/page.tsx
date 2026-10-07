@@ -7,7 +7,7 @@ export function generateStaticParams() {
 }
 
 export default function EuropeanCountryPage({ params }: { params: { country: string } }) {
-  const country = findCountry(europeanCountries, params.country);
+  const country = findCountry(europeanCountries, params.country, "europe");
 
   if (!country) {
     notFound();

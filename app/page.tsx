@@ -365,17 +365,86 @@ import AnimatedFeaturedNames from "@/components/AnimatedFeaturedNames";
 import LocalDateTime from "@/components/LocalDateTime";
 import { categories, regions } from "@/lib/data";
 import { namesData } from "@/lib/data/names";
+import { countryRegions } from "@/lib/countries";
+import type { Name } from "@/lib/names/types";
+import { africaNames } from "@/lib/names/africa";
+import { asiaNames } from "@/lib/names/asia";
+import { europeNames } from "@/lib/names/europe";
+import { middleEastNames } from "@/lib/names/middle-east";
+import { northAmericaNames } from "@/lib/names/north-america";
+import { oceaniaNames } from "@/lib/names/oceania";
+import { southAmericaNames } from "@/lib/names/south-america";
 import { ArrowRight, BookMarked, Heart, Search, SlidersHorizontal } from "lucide-react";
 
+const regionalDatasets: { regionSlug: string; names: Name[] }[] = [
+  { regionSlug: "europe", names: europeNames },
+  { regionSlug: "middle-east", names: middleEastNames },
+  { regionSlug: "south-asia", names: asiaNames },
+  { regionSlug: "africa", names: africaNames },
+  { regionSlug: "north-america", names: northAmericaNames },
+  { regionSlug: "latin-america", names: southAmericaNames },
+  { regionSlug: "oceania-australia", names: oceaniaNames },
+];
+
+const toSlug = (value: string) =>
+  value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+const countryRegionLookup = Object.entries(countryRegions).flatMap(
+  ([regionSlug, region]) =>
+    region.countries.map((country) => ({
+      country: country.name,
+      region: region.name,
+      regionSlug,
+      countrySlug: country.slug,
+    })),
+);
+
+const regionalSearchItems = regionalDatasets.flatMap(({ regionSlug, names }) =>
+  names.map((item, index) => {
+    const country = item.country ?? "";
+    const countryEntry =
+      countryRegionLookup.find(
+        (entry) => entry.country === country && entry.regionSlug === regionSlug,
+      ) ??
+      (regionSlug === "south-asia"
+        ? countryRegionLookup.find((entry) => entry.country === country)
+        : undefined);
+    const region = countryEntry?.region ?? regionSlug.replace(/-/g, " ");
+
+    return {
+      key: `${regionSlug}-${toSlug(country)}-${toSlug(item.name)}-${item.gender}-${index}`,
+      label: item.name,
+      gender: item.gender,
+      meaning: item.englishMeaning,
+      category: item.religion,
+      country,
+      region,
+      origin: item.origin,
+      href: countryEntry
+        ? `/countries/${countryEntry.regionSlug}/${countryEntry.countrySlug}`
+        : `/name/${toSlug(item.name)}`,
+    };
+  }),
+);
+
+const legacySearchItems = namesData.map((item, index) => ({
+  key: `catalogue-${toSlug(item.name)}-${index}`,
+  label: item.name,
+  gender: item.gender,
+  meaning: item.meaning,
+  category: undefined,
+  country: "",
+  region: item.region,
+  origin: item.region,
+  href: `/name/${toSlug(item.name)}`,
+}));
+
+const allNameItems = [...regionalSearchItems, ...legacySearchItems];
 const searchItems = [
-  ...namesData.filter((item) => item.name !== "Alexander").map((item) => ({
-    label: item.name,
-    type: "Name" as const,
-    href: `/name/${item.name.toLowerCase()}`,
-    detail: `${item.meaning} · ${item.region}`,
-  })),
+  ...allNameItems,
   ...Object.entries(regions).flatMap(([region, countries]) =>
     countries.map((country) => ({
+      key: `country-${toSlug(country)}`,
       label: country,
       type: "Country" as const,
       href: `/countries/${region === "Europe" ? "europe" : "middle-east"}/${country.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
@@ -383,18 +452,32 @@ const searchItems = [
     })),
   ),
   ...Object.keys(regions).map((region) => ({
+    key: `region-${toSlug(region)}`,
     label: region,
     type: "Region" as const,
     href: `/countries/${region === "Europe" ? "europe" : "middle-east"}`,
     detail: "Explore countries and names",
   })),
   ...categories.map((category) => ({
+    key: `category-${toSlug(category)}`,
     label: category,
     type: "Category" as const,
     href: "#categories",
     detail: "Browse collection",
   })),
 ];
+
+const featuredNames = allNameItems
+  .filter((item, index, items) => items.findIndex((candidate) => candidate.label === item.label) === index)
+  .slice(0, 5)
+  .map((item) => ({
+    name: item.label,
+    gender: item.gender === "both" || item.gender === "unisex" ? "Unisex name" : `${item.gender} name`,
+    origin: item.origin,
+    region: item.country || item.region,
+    meaning: item.meaning,
+    href: item.href,
+  }));
 
 export default function Home() {
   return (
@@ -452,7 +535,7 @@ export default function Home() {
               <LocalDateTime />
             </div>
 
-            <AnimatedFeaturedNames />
+            <AnimatedFeaturedNames names={featuredNames} />
           </div>
         </section>
 

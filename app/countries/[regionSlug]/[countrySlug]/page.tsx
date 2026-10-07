@@ -17,7 +17,7 @@ export default function CountryPage({
   params: { regionSlug: string; countrySlug: string };
 }) {
   const region = countryRegions[params.regionSlug as keyof typeof countryRegions];
-  const country = region && findCountry(region.countries, params.countrySlug);
+  const country = region && findCountry(region.countries, params.countrySlug, params.regionSlug);
 
   if (!region || !country) {
     notFound();

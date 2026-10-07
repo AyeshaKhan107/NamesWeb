@@ -1,0 +1,25 @@
+import type { Name } from "@/lib/names/types";
+
+export const africaNames: Name[] = [
+	{ name: "Amina", gender: "girl", urduMeaning: "ایماندار", englishMeaning: "Trustworthy", origin: "Arabic", religion: "Islamic", country: "Egypt" },
+	{ name: "Nour", gender: "girl", urduMeaning: "روشنی", englishMeaning: "Light", origin: "Arabic", religion: "Islamic", country: "Egypt" },
+	{ name: "Karim", gender: "boy", urduMeaning: "کریم", englishMeaning: "Generous", origin: "Arabic", religion: "Islamic", country: "Egypt" },
+	{ name: "Mariam", gender: "girl", urduMeaning: "پاک", englishMeaning: "Pure", origin: "Arabic", religion: "Islamic", country: "Libya" },
+	{ name: "Omar", gender: "boy", urduMeaning: "زندہ", englishMeaning: "Life", origin: "Arabic", religion: "Islamic", country: "Libya" },
+	{ name: "Salma", gender: "girl", urduMeaning: "سکون", englishMeaning: "Peace", origin: "Arabic", religion: "Islamic", country: "Tunisia" },
+	{ name: "Youssef", gender: "boy", urduMeaning: "خدا کا اضافہ", englishMeaning: "God increases", origin: "Arabic", religion: "Islamic", country: "Tunisia" },
+	{ name: "Amel", gender: "girl", urduMeaning: "خوشی", englishMeaning: "Hope", origin: "Arabic", religion: "Islamic", country: "Algeria" },
+	{ name: "Karim", gender: "boy", urduMeaning: "کریم", englishMeaning: "Generous", origin: "Arabic", religion: "Islamic", country: "Algeria" },
+	{ name: "Yasmine", gender: "girl", urduMeaning: "خوبصورت", englishMeaning: "Beautiful", origin: "Arabic", religion: "Islamic", country: "Morocco" },
+	{ name: "Hamza", gender: "boy", urduMeaning: "شیر", englishMeaning: "Lion", origin: "Arabic", religion: "Islamic", country: "Morocco" },
+	{ name: "Adaeze", gender: "girl", urduMeaning: "حکمت", englishMeaning: "Crown of a king", origin: "Igbo", religion: "Christian", country: "Nigeria" },
+	{ name: "Emeka", gender: "boy", urduMeaning: "بہادر", englishMeaning: "Brave", origin: "Igbo", religion: "Christian", country: "Nigeria" },
+	{ name: "Wanjiku", gender: "girl", urduMeaning: "خوشی", englishMeaning: "Joy", origin: "Kikuyu", religion: "Christian", country: "Kenya" },
+	{ name: "Daniel", gender: "boy", urduMeaning: "ایماندار", englishMeaning: "God is my judge", origin: "Hebrew", religion: "Christian", country: "Kenya" },
+	{ name: "Lethabo", gender: "girl", urduMeaning: "خوشی", englishMeaning: "Joy", origin: "Sotho", religion: "Christian", country: "South Africa" },
+	{ name: "Thabo", gender: "boy", urduMeaning: "خوشی", englishMeaning: "Joy", origin: "Sotho", religion: "Christian", country: "South Africa" },
+	{ name: "Ama", gender: "girl", urduMeaning: "خوشی", englishMeaning: "Joy", origin: "Akan", religion: "Christian", country: "Ghana" },
+	{ name: "Kofi", gender: "boy", urduMeaning: "پیدائش", englishMeaning: "Born on Friday", origin: "Akan", religion: "Christian", country: "Ghana" },
+	{ name: "Selam", gender: "girl", urduMeaning: "سکون", englishMeaning: "Peace", origin: "Amharic", religion: "Christian", country: "Ethiopia" },
+	{ name: "Daniel", gender: "boy", urduMeaning: "ایماندار", englishMeaning: "God is my judge", origin: "Hebrew", religion: "Christian", country: "Ethiopia" },
+];

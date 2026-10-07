@@ -6,20 +6,209 @@ import { useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
+  Check,
+  Copy,
   Compass,
   Search,
+  Share2,
   Sparkles,
+  Star,
 } from "lucide-react";
 import type { Country } from "@/lib/countries";
+import type { Name, NameGender } from "@/lib/names/types";
 
-type Category = "girls" | "boys" | "both";
+type Category = NameGender;
 
-type CountryName = {
-  name: string;
-  category: Category;
-  meaning: string;
-  origin: string;
+const supportedLanguages = [
+  { key: "english", label: "English" },
+  { key: "urdu", label: "اردو" },
+  { key: "arabic", label: "العربية" },
+  { key: "chinese", label: "中文" },
+  { key: "french", label: "Français" },
+  { key: "german", label: "Deutsch" },
+  { key: "spanish", label: "Español" },
+  { key: "italian", label: "Italiano" },
+  { key: "turkish", label: "Türkçe" },
+] as const;
+
+type MeaningLanguage = (typeof supportedLanguages)[number]["key"];
+
+const getAvailableMeanings = (item: Name) =>
+  supportedLanguages.flatMap(({ key, label }) => {
+    const legacyMeaning = key === "english"
+      ? item.englishMeaning
+      : key === "urdu"
+        ? item.urduMeaning
+        : undefined;
+    const meaning = item.meanings?.[key] ?? legacyMeaning;
+
+    return meaning?.trim() ? [{ key, label, meaning }] : [];
+  });
+
+const writeToClipboard = async (value: string) => {
+  try {
+    await navigator.clipboard.writeText(value);
+  } catch {
+    const textArea = document.createElement("textarea");
+    textArea.value = value;
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    textArea.remove();
+  }
 };
+
+function NameCard({ item, countryName }: { item: Name; countryName: string }) {
+  const availableMeanings = getAvailableMeanings(item);
+  const [selectedLanguage, setSelectedLanguage] = useState<MeaningLanguage>(
+    availableMeanings[0]?.key ?? "english",
+  );
+  const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
+  const [shareState, setShareState] = useState<"idle" | "copied">("idle");
+  const activeMeaning =
+    availableMeanings.find(({ key }) => key === selectedLanguage) ?? availableMeanings[0];
+  const genderLabel = item.gender === "girl" ? "Girl" : item.gender === "boy" ? "Boy" : "Both";
+  const actualCountry = item.country || countryName;
+
+  const getCardText = () => [
+    `Name: ${item.name}`,
+    `Gender: ${genderLabel}`,
+    activeMeaning && `Meaning${activeMeaning.label ? ` (${activeMeaning.label})` : ""}: ${activeMeaning.meaning}`,
+    item.origin && `Origin: ${item.origin}`,
+    item.religion && `Religion: ${item.religion}`,
+    item.popularity && `Popularity: ${item.popularity}`,
+    item.luckyNumber !== undefined && `Lucky Number: ${item.luckyNumber}`,
+    actualCountry && `Country: ${actualCountry}`,
+  ].filter((line): line is string => Boolean(line)).join("\n");
+
+  const handleCopy = async () => {
+    await writeToClipboard(getCardText());
+    setCopyState("copied");
+    window.setTimeout(() => setCopyState("idle"), 1800);
+  };
+
+  const handleShare = async () => {
+    const text = getCardText();
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: item.name, text, url: window.location.href });
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+      }
+    }
+
+    await writeToClipboard(`${text}\nLink: ${window.location.href}`);
+    setShareState("copied");
+    window.setTimeout(() => setShareState("idle"), 1800);
+  };
+
+  return (
+    <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-[#E3E9E4] bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[#B9CDBD] hover:shadow-lg sm:p-6">
+      <div className="flex min-w-0 items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h4 className="break-words text-2xl font-black leading-tight text-[#172019] sm:text-3xl">
+            {item.name}
+          </h4>
+          {item.origin && (
+            <p className="mt-2 text-sm font-semibold text-[#6B806F]">{item.origin}</p>
+          )}
+        </div>
+        <span className="shrink-0 rounded-full bg-[#E7F0E9] px-3 py-1.5 text-xs font-bold text-[#304A3A]">
+          {genderLabel}
+        </span>
+      </div>
+
+      <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 border-y border-[#E8EEE9] py-4">
+        {actualCountry && (
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase text-[#8A968D]">Country</p>
+            <p className="mt-1 break-words text-sm font-semibold text-[#304A3A]">{actualCountry}</p>
+          </div>
+        )}
+        {item.religion && (
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase text-[#8A968D]">Religion</p>
+            <p className="mt-1 break-words text-sm font-semibold text-[#304A3A]">{item.religion}</p>
+          </div>
+        )}
+        {item.popularity && (
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase text-[#8A968D]">Popularity</p>
+            <p className="mt-1 break-words text-sm font-semibold text-[#304A3A]">{item.popularity}</p>
+          </div>
+        )}
+      </div>
+
+      {item.luckyNumber !== undefined && (
+        <div className="mt-4 flex items-center gap-3 rounded-xl bg-[#F5F1E8] px-4 py-3 text-[#304A3A]">
+          <Star size={20} fill="currentColor" aria-hidden="true" />
+          <div>
+            <p className="text-xs font-bold uppercase">Lucky Number</p>
+            <p className="text-xl font-black">{item.luckyNumber}</p>
+            <p className="text-xs text-[#6B806F]">Traditional belief</p>
+          </div>
+        </div>
+      )}
+
+      {activeMeaning && (
+        <section className="mt-5 min-w-0" aria-label={`Meaning of ${item.name}`}>
+          <h5 className="text-sm font-bold text-[#172019]">Meaning</h5>
+          <div className="mt-2 flex flex-wrap gap-1.5" aria-label="Meaning language">
+            {availableMeanings.map(({ key, label }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setSelectedLanguage(key)}
+                aria-pressed={activeMeaning.key === key}
+                className={`rounded-lg px-2.5 py-1.5 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B806F] focus-visible:ring-offset-2 ${
+                  activeMeaning.key === key
+                    ? "bg-[#304A3A] text-white"
+                    : "bg-[#F8FAF8] text-[#304A3A] hover:bg-[#E7F0E9]"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <p
+            className="mt-3 break-words text-base leading-7 text-[#4E6255]"
+            dir={activeMeaning.key === "urdu" || activeMeaning.key === "arabic" ? "rtl" : "auto"}
+          >
+            {activeMeaning.meaning}
+          </p>
+        </section>
+      )}
+
+      <div className="mt-auto flex flex-wrap gap-2 pt-5">
+        <button
+          type="button"
+          onClick={handleCopy}
+          aria-label={`Copy details for ${item.name}`}
+          className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-[#DCE5DE] px-3 py-2 text-sm font-bold text-[#304A3A] transition hover:bg-[#F8FAF8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B806F] focus-visible:ring-offset-2"
+        >
+          {copyState === "copied" ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
+          {copyState === "copied" ? "Copied ✓" : "Copy"}
+        </button>
+        <button
+          type="button"
+          onClick={handleShare}
+          aria-label={`Share ${item.name}`}
+          className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-[#E7F0E9] px-3 py-2 text-sm font-bold text-[#304A3A] transition hover:bg-[#DCE9DF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B806F] focus-visible:ring-offset-2"
+        >
+          {shareState === "copied" ? <Check size={16} aria-hidden="true" /> : <Share2 size={16} aria-hidden="true" />}
+          {shareState === "copied" ? "Link copied" : "Share"}
+        </button>
+      </div>
+      <span className="sr-only" aria-live="polite">
+        {copyState === "copied" ? "Name details copied" : shareState === "copied" ? "Share details copied" : ""}
+      </span>
+    </article>
+  );
+}
 
 export default function CountryDetails({
   country,
@@ -30,22 +219,81 @@ export default function CountryDetails({
   region: string;
   regionSlug: string;
 }) {
-  const [category, setCategory] = useState<Category>("girls");
+  const [category, setCategory] = useState<Category>("girl");
   const [search, setSearch] = useState("");
+  const [religion, setReligion] = useState("");
+  const [origin, setOrigin] = useState("");
+  const [popularity, setPopularity] = useState("");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
 
-  const names = (country as Country & { names?: CountryName[] }).names ?? [];
+  const names: Name[] = country.names ?? [];
 
-  const filteredNames = useMemo(() => {
+  const origins = Array.from(new Set(names.map((item) => item.origin))).sort();
+  const religions = Array.from(
+    new Set(names.map((item) => item.religion).filter(Boolean)),
+  ).sort();
+  const popularities = Array.from(
+    new Set(names.map((item) => item.popularity).filter(Boolean)),
+  ).sort();
+  const states = Array.from(
+    new Set(names.map((item) => item.state).filter(Boolean)),
+  ).sort() as string[];
+  const cities = Array.from(
+    new Set(names.map((item) => item.city).filter(Boolean)),
+  ).sort() as string[];
+  const filterOptions: Array<{
+    label: string;
+    value: string;
+    setValue: (value: string) => void;
+    options: string[];
+  }> = [
+    { label: "Religion", value: religion, setValue: setReligion, options: religions as string[] },
+    { label: "Origin", value: origin, setValue: setOrigin, options: origins },
+    { label: "Popularity", value: popularity, setValue: setPopularity, options: popularities as string[] },
+    { label: "State", value: state, setValue: setState, options: states },
+    { label: "City", value: city, setValue: setCity, options: cities },
+  ].filter((filter) => filter.options.length > 0);
+
+  const matchingNames = useMemo(() => {
     return names.filter((item) => {
-      const matchesCategory = item.category === category;
+      const searchableText = [
+        item.name,
+        ...getAvailableMeanings(item).map(({ meaning }) => meaning),
+        item.origin,
+        item.country || country.name,
+        item.religion,
+        item.state,
+        item.city,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
 
-      const matchesSearch = item.name
-        .toLowerCase()
-        .includes(search.toLowerCase());
+      const matchesSearch = searchableText.includes(search.toLowerCase());
+      const matchesReligion = !religion || item.religion === religion;
+      const matchesOrigin = !origin || item.origin === origin;
+      const matchesPopularity = !popularity || item.popularity === popularity;
+      const matchesState = !state || item.state === state;
+      const matchesCity = !city || item.city === city;
 
-      return matchesCategory && matchesSearch;
+      return (
+        matchesSearch &&
+        matchesReligion &&
+        matchesOrigin &&
+        matchesPopularity &&
+        matchesState &&
+        matchesCity
+      );
     });
-  }, [names, category, search]);
+  }, [names, country.name, search, religion, origin, popularity, state, city]);
+
+  const filteredNames = matchingNames.filter((item) => item.gender === category);
+  const nameCounts: Record<Category, number> = {
+    girl: matchingNames.filter((item) => item.gender === "girl").length,
+    boy: matchingNames.filter((item) => item.gender === "boy").length,
+    both: matchingNames.filter((item) => item.gender === "both").length,
+  };
 
   return (
     <main className="min-h-screen bg-[#F8FAF8]">
@@ -120,45 +368,55 @@ export default function CountryDetails({
           </div>
 
           {/* CATEGORY TABS */}
-          <div className="mt-8 flex flex-wrap gap-3">
-            <button
-              onClick={() => setCategory("girls")}
-              className={`rounded-xl px-6 py-3 text-sm font-bold transition ${
-                category === "girls"
-                  ? "bg-[#304A3A] text-white shadow-sm"
-                  : "bg-[#E7F0E9] text-[#304A3A] hover:bg-[#DCE9DF]"
-              }`}
-            >
-              Girls
-            </button>
+          <div className="mt-8 inline-flex max-w-full flex-wrap gap-1 rounded-xl border border-[#E3E9E4] bg-[#F8FAF8] p-1" role="group" aria-label="Filter names by gender">
+            {([
+              { key: "girl", label: "Girls" },
+              { key: "boy", label: "Boys" },
+              { key: "both", label: "Both" },
+            ] as const).map(({ key, label }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setCategory(key)}
+                aria-pressed={category === key}
+                className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B806F] focus-visible:ring-offset-2 ${
+                  category === key
+                    ? "bg-[#304A3A] text-white shadow-sm"
+                    : "text-[#304A3A] hover:bg-[#E7F0E9]"
+                }`}
+              >
+                {label}
+                <span className={`rounded-full px-2 py-0.5 text-xs ${category === key ? "bg-white/15 text-white" : "bg-white text-[#6B806F]"}`}>
+                  {nameCounts[key]}
+                </span>
+              </button>
+            ))}
+          </div>
 
-            <button
-              onClick={() => setCategory("boys")}
-              className={`rounded-xl px-6 py-3 text-sm font-bold transition ${
-                category === "boys"
-                  ? "bg-[#304A3A] text-white shadow-sm"
-                  : "bg-[#E7F0E9] text-[#304A3A] hover:bg-[#DCE9DF]"
-              }`}
-            >
-              Boys
-            </button>
-
-            <button
-              onClick={() => setCategory("both")}
-              className={`rounded-xl px-6 py-3 text-sm font-bold transition ${
-                category === "both"
-                  ? "bg-[#304A3A] text-white shadow-sm"
-                  : "bg-[#E7F0E9] text-[#304A3A] hover:bg-[#DCE9DF]"
-              }`}
-            >
-              Both
-            </button>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            {filterOptions.map(({ label, value, setValue, options }) => (
+              <label key={label} className="text-sm font-bold text-[#4E6255]">
+                {label}
+                <select
+                  value={value}
+                  onChange={(event) => setValue(event.target.value)}
+                  className="mt-2 w-full rounded-xl border border-[#DCE5DE] bg-[#F8FAF8] px-3 py-3 font-normal text-[#172019] outline-none focus:border-[#9DB5A2] focus:ring-4 focus:ring-[#E7F0E9]"
+                >
+                  <option value="">All</option>
+                  {options.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ))}
           </div>
 
           {/* RESULTS COUNT */}
           <div className="mt-8 flex items-center justify-between">
             <h3 className="text-xl font-black capitalize text-[#172019]">
-              {category} names
+              {category === "girl" ? "Girls" : category === "boy" ? "Boys" : "Both"} names
             </h3>
 
             <span className="rounded-full bg-[#F1F5F1] px-4 py-2 text-sm font-bold text-[#6B806F]">
@@ -170,38 +428,7 @@ export default function CountryDetails({
           {filteredNames.length > 0 ? (
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredNames.map((item, index) => (
-                <div
-                  key={`${item.name}-${index}`}
-                  className="group rounded-2xl border border-[#E3E9E4] bg-[#FCFDFC] p-5 transition duration-200 hover:-translate-y-1 hover:border-[#B9CDBD] hover:shadow-md"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <h4 className="text-xl font-black text-[#172019]">
-                      {item.name}
-                    </h4>
-
-                    <span className="rounded-lg bg-[#E7F0E9] px-2.5 py-1 text-xs font-bold text-[#304A3A]">
-                      {item.category === "girls"
-                        ? "Girl"
-                        : item.category === "boys"
-                          ? "Boy"
-                          : "Both"}
-                    </span>
-                  </div>
-
-                  <p className="mt-3 text-sm leading-6 text-[#6B746D]">
-                    {item.meaning}
-                  </p>
-
-                  <div className="mt-4 border-t border-[#E8EEE9] pt-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-[#8A968D]">
-                      Origin
-                    </p>
-
-                    <p className="mt-1 text-sm font-bold text-[#4E6255]">
-                      {item.origin}
-                    </p>
-                  </div>
-                </div>
+                <NameCard key={`${item.name}-${item.country ?? country.name}-${index}`} item={item} countryName={country.name} />
               ))}
             </div>
           ) : (

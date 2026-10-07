@@ -6,10 +6,17 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Search, Sparkles, X } from "lucide-react";
 
 type SearchItem = {
+  key: string;
   label: string;
-  type: "Name" | "Country" | "Region" | "Category";
   href: string;
-  detail: string;
+  detail?: string;
+  type?: "Name" | "Country" | "Region" | "Category";
+  gender?: string;
+  meaning?: string;
+  category?: string;
+  country?: string;
+  region?: string;
+  origin?: string;
 };
 
 type HomeSearchProps = {
@@ -25,8 +32,19 @@ export default function HomeSearch({ items }: HomeSearchProps) {
     const normalizedQuery = query.trim().toLowerCase();
     if (!normalizedQuery) return [];
     return items
-      .filter((item) => `${item.label} ${item.detail} ${item.type}`.toLowerCase().includes(normalizedQuery))
-      .slice(0, 6);
+      .filter((item) =>
+        [item.label, item.meaning, item.country, item.region, item.origin, item.gender, item.category, item.detail, item.type]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(normalizedQuery),
+      )
+      .sort((first, second) => {
+        const firstNameMatch = first.label.toLowerCase().includes(normalizedQuery) ? 0 : 1;
+        const secondNameMatch = second.label.toLowerCase().includes(normalizedQuery) ? 0 : 1;
+        return firstNameMatch - secondNameMatch;
+      })
+      .slice(0, 12);
   }, [items, query]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -36,7 +54,7 @@ export default function HomeSearch({ items }: HomeSearchProps) {
     if (!normalizedQuery) return;
 
     const exactName = items.find(
-      (item) => item.type === "Name" && item.label.toLowerCase() === normalizedQuery,
+      (item) => item.meaning !== undefined && item.label.toLowerCase() === normalizedQuery,
     );
     const firstMatch = matches[0];
     router.push(exactName?.href ?? firstMatch?.href ?? `/name/${normalizedQuery.replace(/[^a-z0-9-]+/g, "-")}`);
@@ -74,14 +92,18 @@ export default function HomeSearch({ items }: HomeSearchProps) {
       {query.trim() && (
         <div className="absolute left-0 right-0 top-full z-20 mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 text-left shadow-xl">
           {matches.length > 0 ? (
-            <div className="grid gap-1">
+            <div className="grid max-h-[min(60vh,28rem)] gap-1 overflow-y-auto">
               {matches.map((item) => (
-                <Link key={`${item.type}-${item.label}`} href={item.href} className="group flex items-center justify-between rounded-xl px-4 py-3 transition hover:bg-mint">
+                <Link key={item.key} href={item.href} className="group flex items-center justify-between gap-3 rounded-xl px-4 py-3 transition hover:bg-mint">
                   <span className="flex items-center gap-3">
                     <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-cream text-sage"><Sparkles size={16} /></span>
                     <span>
                       <span className="block font-bold text-ink">{item.label}</span>
-                      <span className="block text-xs text-slate-500">{item.type} · {item.detail}</span>
+                      <span className="block text-xs text-slate-500">
+                        {[item.meaning, item.gender, item.category, item.country, item.region, item.origin, item.detail ?? item.type]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </span>
                     </span>
                   </span>
                   <ArrowRight size={17} className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-sage" />

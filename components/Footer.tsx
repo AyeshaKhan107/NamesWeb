@@ -294,7 +294,7 @@ export default function Footer() {
           <div className="max-w-[26ch]">
             <div className="flex items-center gap-1.5">
               <span className="text-xl font-black tracking-tight text-[#2F4A3D]">
-                Names<span className="text-[#8A9A8D]">Hub</span>
+                Name<span className="text-[#8A9A8D]">Worlds</span>
               </span>
               <Sparkles size={14} className="text-[#C79A56]" strokeWidth={2} />
             </div>
@@ -353,7 +353,7 @@ export default function Footer() {
         {/* Bottom bar, minimal */}
         <div className="mt-10 flex flex-col items-center gap-4 border-t border-[#EAE3D6] pt-5 sm:flex-row sm:justify-between">
           <p className="text-[12px] text-[#B7C0B8]">
-            © 2026 NamesHub — made with care
+            © 2026 NameWorlds
           </p>
 
           <div className="flex items-center gap-3">

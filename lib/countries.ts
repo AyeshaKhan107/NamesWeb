@@ -1,7 +1,12 @@
+import { getNamesForCountry } from "@/lib/names/registry";
+import type { Name } from "@/lib/names/types";
+
 export type Country = {
   name: string;
   slug: string;
   flag: string;
+  region?: string;
+  names?: Name[];
 };
 
 const country = (name: string, flag: string): Country => ({
@@ -180,5 +185,14 @@ export const countryRegions = {
   "oceania-australia": { name: "Oceania / Australia", countries: oceaniaCountries },
 } as const;
 
-export const findCountry = (countries: Country[], slug: string) =>
-  countries.find((item) => item.slug === slug);
+export const findCountry = (
+  countries: Country[],
+  slug: string,
+  regionSlug?: string,
+): Country | undefined => {
+  const country = countries.find((item) => item.slug === slug);
+
+  return country
+    ? { ...country, names: country.names ?? getNamesForCountry(slug, regionSlug) }
+    : undefined;
+};

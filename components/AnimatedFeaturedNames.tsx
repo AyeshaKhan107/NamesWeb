@@ -10,21 +10,15 @@ type FeaturedName = {
   origin: string;
   region: string;
   meaning: string;
+  href: string;
 };
 
-const featuredNames: FeaturedName[] = [
-  { name: "Sofia", gender: "Girl name", origin: "Greek", region: "Europe", meaning: "Wisdom and grace" },
-  { name: "Omar", gender: "Boy name", origin: "Arabic", region: "Middle East", meaning: "Flourishing and long-lived" },
-  { name: "Layla", gender: "Girl name", origin: "Arabic", region: "Middle East", meaning: "Night and quiet beauty" },
-  { name: "Amara", gender: "Girl name", origin: "African", region: "Africa", meaning: "Eternal and graceful" },
-];
-
-export default function AnimatedFeaturedNames() {
+export default function AnimatedFeaturedNames({ names }: { names: FeaturedName[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeName = featuredNames[activeIndex];
+  const activeName = names[activeIndex];
 
   function moveSlide(direction: number) {
-    setActiveIndex((currentIndex) => (currentIndex + direction + featuredNames.length) % featuredNames.length);
+    setActiveIndex((currentIndex) => (currentIndex + direction + names.length) % names.length);
   }
 
   useEffect(() => {
@@ -35,8 +29,7 @@ export default function AnimatedFeaturedNames() {
 
   return (
     <div
-      className="relative ml-auto min-w-0 w-full max-w-sm overflow-hidden rounded-sm border bg-white p-8 shadow-[0_1px_0_rgba(0,0,0,0.03)]"
-      style={{ borderColor: "var(--sage-line)" }}
+      className="relative ml-auto min-w-0 w-full max-w-sm py-4 md:py-8"
       onKeyDown={(event) => {
         if (event.key === "ArrowLeft") moveSlide(-1);
         if (event.key === "ArrowRight") moveSlide(1);
@@ -44,14 +37,13 @@ export default function AnimatedFeaturedNames() {
       tabIndex={0}
       aria-label="Featured names slider"
     >
-      <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[#E4E9DF] opacity-60 blur-2xl animate-pulse" />
       <div className="relative">
         <div className="flex items-center justify-between gap-4">
           <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.08em]" style={{ color: "var(--brass)" }}>
             <Sparkles size={14} /> Featured names
           </p>
           <span className="text-xs font-medium" style={{ color: "#6B7568" }}>
-            0{activeIndex + 1} / 0{featuredNames.length}
+            {String(activeIndex + 1).padStart(2, "0")} / {String(names.length).padStart(2, "0")}
           </span>
         </div>
 
@@ -79,7 +71,7 @@ export default function AnimatedFeaturedNames() {
               <ArrowLeft size={14} />
             </button>
             <div className="flex gap-1.5" aria-label="Featured name slides">
-            {featuredNames.map((item, index) => (
+            {names.map((item, index) => (
               <button
                 key={item.name}
                 aria-label={`Show ${item.name}`}
@@ -99,7 +91,7 @@ export default function AnimatedFeaturedNames() {
               <ArrowRight size={14} />
             </button>
           </div>
-          <Link href={`/name/${activeName.name.toLowerCase()}`} className="inline-flex items-center gap-1 text-sm font-medium transition hover:gap-2" style={{ color: "var(--forest)" }}>
+          <Link href={activeName.href} className="inline-flex items-center gap-1 text-sm font-medium transition hover:gap-2" style={{ color: "var(--forest)" }}>
             Explore <ArrowRight size={15} />
           </Link>
         </div>
