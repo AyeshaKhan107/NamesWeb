@@ -2,8 +2,11 @@
 
 import { CalendarDays } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useLocale } from "@/components/LocaleProvider";
 
 export default function LocalDateTime() {
+  const { locale } = useLocale();
+  const intlLocale = ({ en: "en-GB", ur: "ur-PK", ar: "ar-SA", zh: "zh-CN", es: "es-ES", fr: "fr-FR", de: "de-DE", ru: "ru-RU", hi: "hi-IN", tr: "tr-TR" } as const)[locale];
   const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -26,13 +29,13 @@ export default function LocalDateTime() {
         </div>
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#6B806F]">
-            {now.toLocaleDateString(undefined, { weekday: "long" })}
+            {now.toLocaleDateString(intlLocale, { weekday: "long" })}
           </p>
           <p className="mt-1 text-sm font-semibold text-[#304A3A]">
-            {now.toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}
+            {now.toLocaleDateString(intlLocale, { day: "numeric", month: "long", year: "numeric" })}
           </p>
           <p className="mt-1 font-mono text-sm tabular-nums text-[#6B806F]">
-            {now.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+            {now.toLocaleTimeString(intlLocale, { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
           </p>
         </div>
       </div>

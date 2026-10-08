@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Search, Sparkles, X } from "lucide-react";
+import { useLocale } from "@/components/LocaleProvider";
 
 type SearchItem = {
   key: string;
@@ -24,6 +25,7 @@ type HomeSearchProps = {
 };
 
 export default function HomeSearch({ items }: HomeSearchProps) {
+  const { t } = useLocale();
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -57,7 +59,11 @@ export default function HomeSearch({ items }: HomeSearchProps) {
       (item) => item.meaning !== undefined && item.label.toLowerCase() === normalizedQuery,
     );
     const firstMatch = matches[0];
-    router.push(exactName?.href ?? firstMatch?.href ?? `/name/${normalizedQuery.replace(/[^a-z0-9-]+/g, "-")}`);
+    const destination = exactName ?? firstMatch;
+    const href = destination?.href ?? `/name/${normalizedQuery.replace(/[^a-z0-9-]+/g, "-")}`;
+    router.push(exactName && exactName.href.startsWith("/countries/")
+      ? `${href}?name=${encodeURIComponent(exactName.label)}`
+      : href);
   }
 
   function clearSearch() {
@@ -70,9 +76,9 @@ export default function HomeSearch({ items }: HomeSearchProps) {
       <form onSubmit={handleSubmit} className="card flex items-center gap-2 bg-white p-2 transition focus-within:border-sage focus-within:ring-4 focus-within:ring-mint">
         <Search aria-hidden="true" className="ml-3 shrink-0 text-slate-400" size={21} />
         <input
-          aria-label="Search names, meanings, countries or origins"
+          aria-label={t("search.label")}
           className="min-w-0 flex-1 bg-transparent px-2 py-3 text-base text-ink outline-none placeholder:text-slate-400"
-          placeholder="Search a name, meaning, country or origin..."
+          placeholder={t("search.placeholder")}
           value={query}
           onChange={(event) => {
             setQuery(event.target.value);
@@ -85,7 +91,7 @@ export default function HomeSearch({ items }: HomeSearchProps) {
           </button>
         )}
         <button className="shrink-0 rounded-xl bg-ink px-5 py-3 font-semibold text-white transition hover:bg-sage" type="submit">
-          Search
+          {t("search.button")}
         </button>
       </form>
 
@@ -94,7 +100,7 @@ export default function HomeSearch({ items }: HomeSearchProps) {
           {matches.length > 0 ? (
             <div className="grid max-h-[min(60vh,28rem)] gap-1 overflow-y-auto">
               {matches.map((item) => (
-                <Link key={item.key} href={item.href} className="group flex items-center justify-between gap-3 rounded-xl px-4 py-3 transition hover:bg-mint">
+                <Link key={item.key} href={item.meaning !== undefined && item.href.startsWith("/countries/") ? `${item.href}?name=${encodeURIComponent(item.label)}` : item.href} className="group flex items-center justify-between gap-3 rounded-xl px-4 py-3 transition hover:bg-mint">
                   <span className="flex items-center gap-3">
                     <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-cream text-sage"><Sparkles size={16} /></span>
                     <span>
@@ -112,20 +118,20 @@ export default function HomeSearch({ items }: HomeSearchProps) {
             </div>
           ) : (
             <div className="px-4 py-5">
-              <p className="text-sm font-semibold text-ink">Name not found</p>
+              <p className="text-sm font-semibold text-ink">{t("search.notFound")}</p>
               <p className="mt-1 text-sm leading-6 text-slate-500">
-                We couldn&apos;t find that name. Try another spelling or explore the full collection.
+                {t("search.description")}
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
-                <Link href="/#categories" className="rounded-lg bg-ink px-3 py-2 text-xs font-semibold text-white transition hover:bg-sage">Explore Names</Link>
-                <Link href="/" className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-ink transition hover:bg-mint">Go Home</Link>
+                <Link href="/#categories" className="rounded-lg bg-ink px-3 py-2 text-xs font-semibold text-white transition hover:bg-sage">{t("search.explore")}</Link>
+                <Link href="/" className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-ink transition hover:bg-mint">{t("search.goHome")}</Link>
               </div>
             </div>
           )}
         </div>
       )}
 
-      {submitted && !query.trim() && <p className="mt-3 text-sm text-slate-500">Start typing to search the Names collection.</p>}
+      {submitted && !query.trim() && <p className="mt-3 text-sm text-slate-500">{t("search.start")}</p>}
     </div>
   );
 }

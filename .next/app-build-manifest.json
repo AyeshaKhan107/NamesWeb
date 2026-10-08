@@ -20,6 +20,31 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/_not-found/page.js"
+    ],
+    "/countries/europe/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/countries/europe/page.js"
+    ],
+    "/countries/europe/[country]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/countries/europe/[country]/page.js"
+    ],
+    "/countries/[regionSlug]/[countrySlug]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/countries/[regionSlug]/[countrySlug]/page.js"
+    ],
+    "/countries/[regionSlug]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/countries/[regionSlug]/page.js"
+    ],
+    "/countries/middle-east/[country]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/countries/middle-east/[country]/page.js"
     ]
   }
 }

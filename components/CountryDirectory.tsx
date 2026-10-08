@@ -1,6 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Globe2, MapPin, Sparkles } from "lucide-react";
 import type { Country } from "@/lib/countries";
+import { useLocale } from "@/components/LocaleProvider";
+import { displayCountry } from "@/lib/i18n";
+
+const regionKeys: Record<string, string> = {
+  europe: "europe", "middle-east": "middleEast", "south-asia": "southAsia", "east-asia": "eastAsia",
+  "southeast-asia": "southeastAsia", "central-asia": "centralAsia", africa: "africa",
+  "north-america": "northAmerica", "latin-america": "latinAmerica", caribbean: "caribbean",
+  "oceania-australia": "oceania",
+};
 
 type CountryDirectoryProps = {
   region: string;
@@ -15,6 +26,9 @@ export default function CountryDirectory({
   description,
   countries,
 }: CountryDirectoryProps) {
+  const { t, locale } = useLocale();
+  const localizedRegion = t(`region.${regionKeys[slug] ?? "europe"}`);
+
   return (
     <main className="min-h-screen bg-[#F8FAF8]">
       <section className="border-b border-[#E3E9E4] bg-white">
@@ -24,16 +38,16 @@ export default function CountryDirectory({
             className="inline-flex items-center gap-2 text-sm font-semibold text-[#6B806F] transition hover:text-[#304A3A]"
           >
             <ArrowLeft size={17} />
-            Back to Home
+            {t("region.backHome")}
           </Link>
 
           <div className="mt-10 max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-[#E7F0E9] px-4 py-2 text-sm font-semibold text-[#304A3A]">
               <Sparkles size={16} />
-              Explore {region}
+              {t("region.explore", { region: localizedRegion })}
             </div>
             <h1 className="mt-5 text-4xl font-black tracking-tight text-[#172019] md:text-6xl">
-              {region} Countries
+              {localizedRegion} {t("region.countries")}
             </h1>
             <p className="mt-5 text-lg leading-8 text-[#6B746D]">{description}</p>
           </div>
@@ -42,17 +56,17 @@ export default function CountryDirectory({
             <div className="rounded-2xl border border-[#E3E9E4] bg-[#F8FAF8] p-5">
               <Globe2 className="text-[#304A3A]" size={22} />
               <p className="mt-3 text-2xl font-black text-[#172019]">{countries.length}</p>
-              <p className="text-sm text-[#6B746D]">Countries</p>
+              <p className="text-sm text-[#6B746D]">{t("region.countries")}</p>
             </div>
             <div className="rounded-2xl border border-[#E3E9E4] bg-[#F8FAF8] p-5">
               <MapPin className="text-[#304A3A]" size={22} />
               <p className="mt-3 text-2xl font-black text-[#172019]">{region}</p>
-              <p className="text-sm text-[#6B746D]">Region</p>
+              <p className="text-sm text-[#6B746D]">{t("region.regionLabel")}</p>
             </div>
             <div className="hidden rounded-2xl border border-[#E3E9E4] bg-[#F8FAF8] p-5 sm:block">
               <Sparkles className="text-[#304A3A]" size={22} />
-              <p className="mt-3 text-2xl font-black text-[#172019]">Names</p>
-              <p className="text-sm text-[#6B746D]">Explore</p>
+              <p className="mt-3 text-2xl font-black text-[#172019]">{t("region.names")}</p>
+              <p className="text-sm text-[#6B746D]">{t("common.explore")}</p>
             </div>
           </div>
         </div>
@@ -60,9 +74,9 @@ export default function CountryDirectory({
 
       <section className="mx-auto max-w-7xl px-5 py-14">
         <div className="mb-8">
-          <p className="text-sm font-bold uppercase tracking-wider text-[#6B806F]">Countries</p>
-          <h2 className="mt-2 text-3xl font-black text-[#172019]">Choose a country</h2>
-          <p className="mt-2 text-[#6B746D]">Select a country to explore its names and naming traditions.</p>
+          <p className="text-sm font-bold uppercase tracking-wider text-[#6B806F]">{t("region.countries")}</p>
+          <h2 className="mt-2 text-3xl font-black text-[#172019]">{t("region.chooseCountry")}</h2>
+          <p className="mt-2 text-[#6B746D]">{t("region.selectCountry")}</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -74,8 +88,8 @@ export default function CountryDirectory({
                     {country.flag}
                   </div>
                   <div>
-                    <h3 className="font-bold text-[#172019]">{country.name}</h3>
-                    <p className="mt-1 text-xs text-[#6B746D]">Explore Names</p>
+                    <h3 className="font-bold text-[#172019]">{displayCountry(country.name, locale, country.flag)}</h3>
+                    <p className="mt-1 text-xs text-[#6B746D]">{t("region.exploreNames")}</p>
                   </div>
                 </div>
                 <ArrowRight size={18} className="text-[#9AA49D] transition-transform duration-300 group-hover:translate-x-1 group-hover:text-[#304A3A]" />

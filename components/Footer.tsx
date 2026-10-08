@@ -210,35 +210,42 @@ import {
 } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { countryRegions } from "@/lib/countries";
+import { useLocale } from "@/components/LocaleProvider";
 
 const footerNotFoundHref = "/404";
 
 const exploreLinks = [
-  { label: "Home", href: "/" },
-  { label: "All Names", href: footerNotFoundHref },
-  { label: "Girls Names", href: footerNotFoundHref },
-  { label: "Boys Names", href: footerNotFoundHref },
-  { label: "Unisex Names", href: footerNotFoundHref },
+  { label: "home", href: "/" },
+  { label: "allNames", href: footerNotFoundHref },
+  { label: "girls", href: footerNotFoundHref },
+  { label: "boys", href: footerNotFoundHref },
+  { label: "unisex", href: footerNotFoundHref },
 ];
 
 const guideLinks = [
-  { label: "Name Meanings", href: footerNotFoundHref },
-  { label: "Name Origins", href: footerNotFoundHref },
-  { label: "Lucky Numbers", href: footerNotFoundHref },
-  { label: "Islamic Names", href: footerNotFoundHref },
-  { label: "Name Finder", href: footerNotFoundHref },
+  { label: "meanings", href: footerNotFoundHref },
+  { label: "origins", href: footerNotFoundHref },
+  { label: "lucky", href: footerNotFoundHref },
+  { label: "islamic", href: footerNotFoundHref },
+  { label: "finder", href: footerNotFoundHref },
 ];
 
 const informationLinks = [
-  { label: "About Us", href: "/about" },
-  { label: "Contact", href: "mailto:hello@nameshub.com" },
-  { label: "Privacy Policy", href: footerNotFoundHref },
-  { label: "Terms", href: footerNotFoundHref },
-  { label: "Disclaimer", href: footerNotFoundHref },
+  { label: "about", href: "/about" },
+  { label: "contact", href: "mailto:hello@nameshub.com" },
+  { label: "privacy", href: footerNotFoundHref },
+  { label: "terms", href: footerNotFoundHref },
+  { label: "disclaimer", href: footerNotFoundHref },
 ];
 
-const regionLinks = Object.entries(countryRegions).map(([slug, region]) => ({
-  label: region.name,
+const regionNameKeys: Record<string, string> = {
+  europe: "europe", "middle-east": "middleEast", "south-asia": "southAsia",
+  "east-asia": "eastAsia", "southeast-asia": "southeastAsia", "central-asia": "centralAsia",
+  africa: "africa", "north-america": "northAmerica", "latin-america": "latinAmerica",
+  caribbean: "caribbean", "oceania-australia": "oceania",
+};
+const regionLinks = Object.entries(countryRegions).map(([slug]) => ({
+  label: `region.${regionNameKeys[slug]}`,
   href: `/countries/${slug}`,
 }));
 
@@ -252,13 +259,15 @@ const socialLinks = [
 function FooterColumn({
   title,
   links,
+  translate,
 }: {
   title: string;
   links: { label: string; href: string }[];
+  translate: (key: string) => string;
 }) {
   return (
     <nav>
-      <h2 className="text-[13px] font-semibold text-[#2F4A3D]">{title}</h2>
+      <h2 className="text-[13px] font-semibold text-[#2F4A3D]">{translate(title)}</h2>
       <ul className="mt-3 space-y-2">
         {links.map((link) => (
           <li key={link.label}>
@@ -266,7 +275,7 @@ function FooterColumn({
               href={link.href}
               className="text-[13px] text-[#8A9A8D] transition-colors hover:text-[#2F4A3D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C79A56] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FBF9F5] rounded-sm"
             >
-              {link.label}
+              {translate(link.label.startsWith("region.") ? link.label : `footer.${link.label}`)}
             </Link>
           </li>
         ))}
@@ -276,6 +285,7 @@ function FooterColumn({
 }
 
 export default function Footer() {
+  const { t } = useLocale();
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
@@ -299,18 +309,18 @@ export default function Footer() {
               <Sparkles size={14} className="text-[#C79A56]" strokeWidth={2} />
             </div>
             <p className="mt-1.5 text-[13px] leading-relaxed text-[#8A9A8D]">
-              Sweet, meaningful names from every corner of the world.
+              {t("footer.tagline")}
             </p>
           </div>
 
           <form
             onSubmit={handleSubscribe}
             className="flex w-full max-w-xs flex-col gap-1.5 sm:w-auto"
-            aria-label="Newsletter subscription"
+            aria-label={t("footer.newsletter")}
           >
             <div className="flex items-center gap-1.5 rounded-full border border-[#EAE3D6] bg-white p-1 pl-4 shadow-[0_1px_2px_rgba(47,74,61,0.06)] focus-within:border-[#C79A56]">
               <label htmlFor="footer-email" className="sr-only">
-                Email address
+                {t("footer.email")}
               </label>
               <input
                 id="footer-email"
@@ -328,7 +338,7 @@ export default function Footer() {
                 type="submit"
                 className="shrink-0 rounded-full bg-[#2F4A3D] px-4 py-2 text-[12px] font-semibold text-white transition-colors hover:bg-[#C79A56] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C79A56] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               >
-                Join
+                {t("footer.join")}
               </button>
             </div>
             <p
@@ -337,17 +347,17 @@ export default function Footer() {
               }`}
               role="status"
             >
-              ✓ You're on the list
+              {submitted ? `✓ ${t("footer.joined")}` : ""}
             </p>
           </form>
         </div>
 
         {/* Link columns, small and tight */}
         <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4 sm:gap-x-8">
-          <FooterColumn title="Explore" links={exploreLinks} />
-          <FooterColumn title="Guides" links={guideLinks} />
-          <FooterColumn title="Countries" links={regionLinks.slice(0, 5)} />
-          <FooterColumn title="Info" links={informationLinks} />
+          <FooterColumn title="footer.explore" links={exploreLinks} translate={t} />
+          <FooterColumn title="footer.guides" links={guideLinks} translate={t} />
+          <FooterColumn title="footer.countries" links={regionLinks.slice(0, 5)} translate={t} />
+          <FooterColumn title="footer.info" links={informationLinks} translate={t} />
         </div>
 
         {/* Bottom bar, minimal */}
@@ -370,7 +380,7 @@ export default function Footer() {
             <span className="mx-1 h-3.5 w-px bg-[#EAE3D6]" aria-hidden="true" />
             <a
               href="#top"
-              aria-label="Back to top"
+              aria-label={t("footer.backTop")}
               className="flex h-7 w-7 items-center justify-center rounded-full text-[#8A9A8D] transition-colors hover:bg-[#2F4A3D]/5 hover:text-[#2F4A3D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C79A56]"
             >
               <ArrowUp size={14} strokeWidth={1.8} />

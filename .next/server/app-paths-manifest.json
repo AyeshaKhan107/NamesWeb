@@ -1,4 +1,9 @@
 {
   "/page": "app/page.js",
-  "/_not-found/page": "app/_not-found/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/countries/europe/page": "app/countries/europe/page.js",
+  "/countries/[regionSlug]/[countrySlug]/page": "app/countries/[regionSlug]/[countrySlug]/page.js",
+  "/countries/europe/[country]/page": "app/countries/europe/[country]/page.js",
+  "/countries/middle-east/[country]/page": "app/countries/middle-east/[country]/page.js",
+  "/countries/[regionSlug]/page": "app/countries/[regionSlug]/page.js"
 }

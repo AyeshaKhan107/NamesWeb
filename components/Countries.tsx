@@ -4,6 +4,8 @@
 import Link from "next/link";
 import { Globe2, MapPin, ArrowRight } from "lucide-react";
 import { countryRegions } from "@/lib/countries";
+import { useLocale } from "@/components/LocaleProvider";
+import { displayCountry } from "@/lib/i18n";
 
 const regions = [
   { ...countryRegions.europe, slug: "europe", description: "Explore names from countries across Europe." },
@@ -20,6 +22,14 @@ const regions = [
 ];
 
 export default function Countries() {
+  const { t, locale } = useLocale();
+  const regionKeys: Record<string, string> = {
+    europe: "europe", "middle-east": "middleEast", "south-asia": "southAsia", "east-asia": "eastAsia",
+    "southeast-asia": "southeastAsia", "central-asia": "centralAsia", africa: "africa",
+    "north-america": "northAmerica", "latin-america": "latinAmerica", caribbean: "caribbean",
+    "oceania-australia": "oceania",
+  };
+
   return (
     <section className="w-full py-20 bg-[#F8FAF8]">
       <div className="max-w-7xl mx-auto px-5">
@@ -27,16 +37,15 @@ export default function Countries() {
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E7F0E9] text-[#304A3A] text-sm font-semibold">
             <Globe2 size={16} />
-            Explore by Region
+            {t("home.exploreRegion")}
           </span>
 
           <h2 className="mt-5 text-4xl md:text-5xl font-black text-[#172019]">
-            Discover Names Around the World
+            {t("home.discoverWorld")}
           </h2>
 
           <p className="mt-4 text-[#6B746D] text-lg">
-            Explore beautiful names, meanings and origins from different
-            countries and regions.
+            {t("home.regionDescription")}
           </p>
         </div>
 
@@ -61,11 +70,11 @@ export default function Countries() {
 
                     <div className="min-w-0">
                       <h3 className="text-2xl font-black text-[#172019]">
-                        {region.name}
+                        {t(`region.${regionKeys[region.slug]}`)}
                       </h3>
 
                       <p className="text-sm text-[#6B746D] mt-1">
-                        {region.countries.length} countries
+                        {t("home.countriesCount", { count: region.countries.length })}
                       </p>
                     </div>
                   </div>
@@ -77,7 +86,7 @@ export default function Countries() {
 
                 {/* Description */}
                 <p className="text-[#6B746D] mt-6 leading-relaxed">
-                  {region.description}
+                  {t("home.regionDescription")}
                 </p>
 
                 {/* Countries Preview */}
@@ -88,13 +97,13 @@ export default function Countries() {
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F5F1E8] border border-[#E8E2D5] text-sm text-[#304A3A]"
                     >
                       <MapPin size={13} />
-                      {country.name}
+                      {displayCountry(country.name, locale, country.flag)}
                     </span>
                   ))}
 
                   {region.countries.length > 10 && (
                     <span className="px-3 py-1.5 text-sm font-bold text-[#304A3A]">
-                      +{region.countries.length - 10} more
+                      {t("home.more", { count: region.countries.length - 10 })}
                     </span>
                   )}
                 </div>
@@ -102,7 +111,7 @@ export default function Countries() {
                 {/* Bottom CTA */}
                 <div className="mt-7 pt-5 border-t border-[#E3E9E4] flex items-center justify-between">
                   <span className="font-bold text-[#304A3A]">
-                    Explore {region.name}
+                    {t("home.exploreMore", { region: t(`region.${regionKeys[region.slug]}`) })}
                   </span>
 
                   <ArrowRight

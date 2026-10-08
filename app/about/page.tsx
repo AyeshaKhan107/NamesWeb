@@ -9,41 +9,46 @@ import {
   Sparkles,
 } from "lucide-react";
 import Header from "@/components/Header";
+import { getServerMessages } from "@/lib/i18n/server";
+import { getText } from "@/lib/i18n";
 
 const offerings = [
   {
-    title: "Name Meanings",
-    description: "Understand the feeling, history and story carried by every name.",
+    title: "about.meanings",
+    description: "about.meaningsText",
     Icon: BookOpen,
   },
   {
-    title: "Urdu Meanings",
-    description: "Explore names with clear, thoughtful Urdu meanings for easier discovery.",
+    title: "about.urduMeanings",
+    description: "about.urduMeaningsText",
     Icon: Sparkles,
   },
   {
-    title: "Origins & Cultures",
-    description: "Discover where names come from and the traditions that shaped them.",
+    title: "about.origins",
+    description: "about.originsText",
     Icon: Compass,
   },
   {
-    title: "Religion",
-    description: "Find names connected to the faiths and traditions meaningful to you.",
+    title: "about.religion",
+    description: "about.religionText",
     Icon: Landmark,
   },
   {
-    title: "Lucky Numbers",
-    description: "Browse an extra layer of character and symbolism behind each name.",
+    title: "about.lucky",
+    description: "about.luckyText",
     Icon: Hash,
   },
   {
-    title: "Rare & Popular Names",
-    description: "Compare timeless favorites with distinctive names waiting to be found.",
+    title: "about.rarePopular",
+    description: "about.rarePopularText",
     Icon: Heart,
   },
 ];
 
 export default function AboutPage() {
+  const messages = getServerMessages();
+  const t = (key: string) => getText(messages, key);
+
   return (
     <>
       <Header />
@@ -53,19 +58,19 @@ export default function AboutPage() {
           <div className="relative mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
             <div className="max-w-3xl">
               <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-[#93712F]">
-                <Sparkles size={15} aria-hidden="true" /> About NamesHub
+                <Sparkles size={15} aria-hidden="true" /> {t("about.eyebrow")}
               </p>
               <h1 className="mt-6 text-4xl font-black leading-tight tracking-tight text-[#304A3A] sm:text-6xl">
-                Every Name Has a Story
+                {t("about.title")}
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-[#6B806F] sm:text-xl">
-                NamesHub helps you discover names with meaning, heritage and character. Explore names from around the world, their origins, Urdu meanings, religious connections, lucky numbers and the stories that make them memorable.
+                {t("about.intro")}
               </p>
               <Link
                 href="/#search"
                 className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#304A3A] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[#6B806F] hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#93712F] focus-visible:ring-offset-2"
               >
-                Explore Names <ArrowRight size={16} aria-hidden="true" />
+                {t("about.explore")} <ArrowRight size={16} aria-hidden="true" />
               </Link>
             </div>
           </div>
@@ -73,17 +78,17 @@ export default function AboutPage() {
 
         <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24" aria-labelledby="offerings-heading">
           <div className="max-w-2xl">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#93712F]">A thoughtful starting point</p>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#93712F]">{t("about.starting")}</p>
             <h2 id="offerings-heading" className="mt-3 text-3xl font-black tracking-tight text-[#304A3A] sm:text-4xl">
-              What We Offer
+              {t("about.offer")}
             </h2>
             <p className="mt-4 leading-7 text-[#6B806F]">
-              Everything you need to move from a first spark of inspiration to a name that feels truly right.
+              {t("about.offerIntro")}
             </p>
           </div>
 
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {offerings.map(({ title, description, Icon }) => (
+              {offerings.map(({ title, description, Icon }) => (
               <article
                 key={title}
                 className="rounded-2xl border border-[#E3E9E4] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#C9D8CC] hover:shadow-lg"
@@ -91,8 +96,8 @@ export default function AboutPage() {
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E7F0E9] text-[#304A3A]">
                   <Icon size={20} strokeWidth={1.8} aria-hidden="true" />
                 </div>
-                <h3 className="mt-6 text-lg font-bold text-[#304A3A]">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-[#6B806F]">{description}</p>
+                <h3 className="mt-6 text-lg font-bold text-[#304A3A]">{t(title)}</h3>
+                <p className="mt-2 text-sm leading-6 text-[#6B806F]">{t(description)}</p>
               </article>
             ))}
           </div>
@@ -104,18 +109,18 @@ export default function AboutPage() {
               <Heart size={32} strokeWidth={1.5} aria-hidden="true" />
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#93712F]">Our purpose</p>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#93712F]">{t("about.purpose")}</p>
               <h2 className="mt-3 text-3xl font-black tracking-tight text-[#304A3A] sm:text-4xl">
-                Helping you find a name that feels meaningful.
+                {t("about.purposeTitle")}
               </h2>
               <p className="mt-5 max-w-2xl leading-7 text-[#6B806F]">
-                Choosing a name can be personal, joyful and sometimes overwhelming. Our goal is to make that journey easier by bringing useful context together in one calm, welcoming place, so every search can lead to a name with a story worth carrying forward.
+                {t("about.purposeText")}
               </p>
               <Link
                 href="/#search"
                 className="mt-7 inline-flex items-center gap-2 text-sm font-bold text-[#304A3A] transition-colors hover:text-[#6B806F] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#93712F] focus-visible:ring-offset-2"
               >
-                Begin exploring <ArrowRight size={16} aria-hidden="true" />
+                {t("about.begin")} <ArrowRight size={16} aria-hidden="true" />
               </Link>
             </div>
           </div>
